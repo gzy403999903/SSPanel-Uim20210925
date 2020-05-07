@@ -377,7 +377,15 @@ return function (SlimApp $app) {
     $app->get('/nodeinfo/{id}',         App\Controllers\VueController::class . ':getNodeInfo');
     $app->get('/resettelegram',         App\Controllers\VueController::class . ':telegramReset');
     $app->get('/getconnectsettings',         App\Controllers\VueController::class . ':getConnectSettings');
-
+    // chenApp
+    $app->group("/appApi", function () {
+        $this->post("/token", \App\Controllers\AppApiController::class . ":newToken");
+        $this->get("/getSsrUser", \App\Controllers\AppApiController::class . ":ssr_index");
+        $this->get("/getUser", \App\Controllers\AppApiController::class . ":index");
+        $this->get('/checkin', \App\Controllers\AppApiController::class . ':doCheckIn');
+        $this->get('/redirect', \App\Controllers\AppApiController::class . ':redirect');
+    });
+    // chenApp end
     /**
      * chenPay
      */
