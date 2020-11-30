@@ -10,11 +10,6 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
-      nginx:
-        image: nginx
-        # Map port 8080 on the Docker host to port 80 on the nginx container
-        ports:
-          - 80:80
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,14 +20,6 @@ jobs:
         run: |
           echo "shell: $SHELL"
           echo "whoami: $(whoami)"
-          echo "===== /etc/nginx/nginx.conf ====="
-          sudo cat /etc/nginx/nginx.conf
-          echo "=== /etc/nginx/sites-enabled/ ==="
-          sudo ls /etc/nginx/sites-enabled/
-          echo "=== /etc/nginx/sites-enabled/ ==="
-          sudo ls /etc/nginx/sites-enabled/
-          echo "== /etc/nginx/sites-available/ =="
-          sudo ls /etc/nginx/sites-available/
       - name: 'Add user "www-data"'
         run: sudo adduser www-data $(whoami)
       - name: 'Add "127.0.0.1 sspanel.host" to hosts'
