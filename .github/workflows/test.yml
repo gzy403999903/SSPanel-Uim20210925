@@ -5,13 +5,19 @@ on:
 
 jobs:
   test:
+    services:
+      nginx:
+        image: nginx
+        # Map port 8080 on the Docker host to port 80 on the nginx container
+        ports:
+          - 80:80
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
-      - name: 'Show Environment'
+          node-version: "12"
+      - name: "Show Environment"
         run: |
           echo "$SHELL"
           echo $(whoami)
@@ -22,6 +28,11 @@ jobs:
       - name: Setup PHP 7.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: "7.4"
           extensions: swoole, fpm, mysql, curl, gd, mbstring, xml, xmlrpc, opcache, zip, json, bz2, bcmath
-
+      - name: Setup MySQL
+        run: |
+          sudo mysql -e "CREATE DATABASE sspanel; use sspanel; source sql/glzjin_all.sql;"
+          sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('sspanel') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+          sudo mysql_upgrade -u root -psspanel
+          sudo service mysql restart
