@@ -6,6 +6,10 @@ on:
 jobs:
   test:
     services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
       nginx:
         image: nginx
         # Map port 8080 on the Docker host to port 80 on the nginx container
@@ -19,8 +23,16 @@ jobs:
           node-version: "12"
       - name: "Show Environment"
         run: |
-          echo "$SHELL"
-          echo $(whoami)
+          echo "shell: $SHELL"
+          echo "whoami: $(whoami)"
+          echo "===== /etc/nginx/nginx.conf ====="
+          sudo cat /etc/nginx/nginx.conf
+          echo "=== /etc/nginx/sites-enabled/ ==="
+          sudo ls /etc/nginx/sites-enabled/
+          echo "=== /etc/nginx/sites-enabled/ ==="
+          sudo ls /etc/nginx/sites-enabled/
+          echo "== /etc/nginx/sites-available/ =="
+          sudo ls /etc/nginx/sites-available/
       - name: 'Add user "www-data"'
         run: sudo adduser www-data $(whoami)
       - name: 'Add "127.0.0.1 sspanel.host" to hosts'
@@ -28,11 +40,11 @@ jobs:
       - name: Setup PHP 7.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
-          extensions: swoole, fpm, mysql, curl, gd, mbstring, xml, xmlrpc, opcache, zip, json, bz2, bcmath
+          php-version: '7.4'
+          # extensions: fpm, mysql, curl, gd, mbstring, xml, xmlrpc, opcache, zip, json, bz2, bcmath
       - name: Setup MySQL
         run: |
           sudo mysql -e "CREATE DATABASE sspanel; use sspanel; source sql/glzjin_all.sql;"
           sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('sspanel') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
           sudo mysql_upgrade -u root -psspanel
-          sudo service mysql restart
+          sudo /etc/init.d/mysql start
