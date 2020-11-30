@@ -1,0 +1,27 @@
+name: Unit Test
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - name: 'Show Environment'
+        run: |
+          echo "$SHELL"
+          echo $(whoami)
+      - name: 'Add user "www-data"'
+        run: sudo adduser www-data $(whoami)
+      - name: 'Add "127.0.0.1 sspanel.host" to hosts'
+        run: sudo echo "127.0.0.1 sspanel.host" | sudo tee -a /etc/hosts
+      - name: Setup PHP 7.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: swoole, fpm, mysql, curl, gd, mbstring, xml, xmlrpc, opcache, zip, json, bz2, bcmath
+
